@@ -1,0 +1,37 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16
+    volumes:
+      - pg:/var/lib/postgresql/data
+      - ./db:/docker-entrypoint-initdb.d/:ro
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: database
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./api:/app
+    depends_on:
+      - postgres
+    ports:
+      - 8000:8000
+    environment:
+      PORT: 8000
+      DB_USER: user
+      DB_PASSWORD: password
+      DB_NAME: database
+      DB_HOST: postgres
+      DB_PORT: 5432
+      JWT_SECRET: b139b70d-3c7d-4aab-9244-c7c6da093b9e
+
+volumes:
+  pg:
+    driver: "local"
