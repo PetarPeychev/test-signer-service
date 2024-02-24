@@ -10,6 +10,7 @@ import (
 	v1 "github.com/PetarPeychev/test-signer-service/api/handlers/v1"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/jwtauth"
 	"github.com/go-chi/render"
 	_ "github.com/lib/pq"
 )
@@ -60,13 +61,14 @@ func NewServer(config Config) (*Server, error) {
 		r.Route("/users", func(r chi.Router) {
 			r.Route("/{userID}", func(r chi.Router) {
 				r.Route("/signatures", func(r chi.Router) {
-					// tokenAuth := jwtauth.New("HS256", []byte(config.JWTSecret), nil)
-					// log.Println("JWT secret:", config.JWTSecret)
-					// r.With(
-					// 	jwtauth.Verifier(tokenAuth),
-					// 	jwtauth.Authenticator(tokenAuth),
-					// ).Post("/", v1.SignAnswers(db))
-					r.Post("/", v1.SignAnswers(db))
+					tokenAuth := jwtauth.New("HS256", []byte(config.JWTSecret), nil)
+					_, tokenString, _ := tokenAuth.Encode(map[string]interface{}{"userID": 1})
+					log.Printf("DEBUG: a sample jwt is %s\n\n", tokenString)
+					log.Println("DEBUG: JWT secret:", config.JWTSecret)
+					r.With(
+						jwtauth.Verifier(tokenAuth),
+						jwtauth.Authenticator,
+					).Post("/", v1.SignAnswers(db))
 					r.Get("/{signatureID}", v1.VerifySignature(db))
 				})
 			})

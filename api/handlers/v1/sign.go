@@ -9,6 +9,7 @@ import (
 
 	models "github.com/PetarPeychev/test-signer-service/api/models"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/jwtauth"
 )
 
 type SignAnswersRequest struct {
@@ -22,30 +23,28 @@ type SignAnswersResponse struct {
 func SignAnswers(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		userID := chi.URLParam(r, "userID")
-
-		// _, claims, _ := jwtauth.FromContext(r.Context())
-		// log.Println(claims)
-		// jwtUserID, ok := claims["userID"].(string)
-		// if !ok {
-		// 	http.Error(w, "Unauthorized: JWT doesn't contain a userID", http.StatusUnauthorized)
-		// 	return
-		// }
-
-		// if jwtUserID != userID {
-		// 	http.Error(w, "Unauthorized: JWT doesn't match userID", http.StatusUnauthorized)
-		// 	return
-		// }
-
-		var request SignAnswersRequest
-		err := json.NewDecoder(r.Body).Decode(&request)
-		if err != nil {
-			http.Error(w, "invalid request format", http.StatusBadRequest)
-			return
-		}
-
 		id, err := strconv.Atoi(userID)
 		if err != nil {
 			http.Error(w, "invalid userID", http.StatusBadRequest)
+			return
+		}
+
+		_, claims, _ := jwtauth.FromContext(r.Context())
+		jwtUserID, ok := claims["userID"]
+		if !ok {
+			http.Error(w, "Unauthorized: JWT doesn't contain a userID", http.StatusUnauthorized)
+			return
+		}
+
+		if int(jwtUserID.(float64)) != id {
+			http.Error(w, "Unauthorized: JWT doesn't match userID", http.StatusUnauthorized)
+			return
+		}
+
+		var request SignAnswersRequest
+		err = json.NewDecoder(r.Body).Decode(&request)
+		if err != nil {
+			http.Error(w, "invalid request format", http.StatusBadRequest)
 			return
 		}
 

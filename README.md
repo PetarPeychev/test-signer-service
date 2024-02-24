@@ -22,7 +22,7 @@ Which can then be used to submit the POST request:
 ```bash
 curl -v -X POST "http://localhost:8000/api/v1/users/1/signatures" \
      -H "Content-Type: application/json" \
-     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySUQiOiIxIn0.8cyk4-zbs3h1u7RGKG4kmM_zdbHdx-4EXGGoQklgoyc" \
+     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOjF9.GVrvCL8mQdY1ubV1w3MEYbysYvQGAj2RzW_0GMYlvVs" \
      -d '{"answers": [{"question": "Whats the best programming language?", "answer": "Go"}]}'
 ```
 
