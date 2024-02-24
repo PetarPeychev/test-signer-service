@@ -27,10 +27,10 @@ curl -v -X POST "http://localhost:8000/api/v1/users/1/signatures" \
 ```
 
 Return codes:
-`200 OK` if signing is successfull
-`400 Bad Request` if body or userID is the wrong format
-`401 Unauthorized` if JWT isn't valid or userID doesn't match
-`500 Internal Server Error` for any server issues
+- `200 OK` if signing is successfull
+- `400 Bad Request` if body or userID is the wrong format
+- `401 Unauthorized` if JWT isn't valid or userID doesn't match
+- `500 Internal Server Error` for any server issues
 
 
 ### Verify Signature (GET /api/v1/users/{userID}/signatures/{signatureID})
@@ -56,7 +56,7 @@ If the signed test exists for that specific user, response:
 ```
 
 Return codes:
-`200 OK` if signed test exists for that user
-`400 Bad Request` if signatureID or userID are invalid
-`404 Not Found` if the signature doesn't exist
-`500 Internal Server Error` for any server issues
+- `200 OK` if signed test exists for that user
+- `400 Bad Request` if signatureID or userID are invalid
+- `404 Not Found` if the signature doesn't exist
+- `500 Internal Server Error` for any server issues
