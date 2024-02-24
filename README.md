@@ -35,7 +35,17 @@ curl -v "http://localhost:8000/api/v1/users/1/signatures/1"
 
 If the signed test exists for that specific user, response is `200 OK`:
 ```json
-{"userId":1,"signatureId":1,"timestamp":"2024-02-24T19:45:59Z"}
+{
+     "userId":1,
+     "signatureId":1,
+     "timestamp":"2024-02-24T19:45:59Z",
+     "answers": [
+          {
+               "question":"Whats the best programming language?",
+               "answer":"Go"
+          }
+     ]
+}
 ```
 
 If the signature doesn't exist, it's a `404 Not Found`.

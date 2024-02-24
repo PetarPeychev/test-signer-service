@@ -4,17 +4,20 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
 
+	models "github.com/PetarPeychev/test-signer-service/api/models"
 	"github.com/go-chi/chi/v5"
 )
 
 type VerifySignatureResponse struct {
-	UserID      int    `json:"userId"`
-	SignatureID int    `json:"signatureId"`
-	Timestamp   string `json:"timestamp"`
+	UserID           int                     `json:"userId"`
+	SignatureID      int                     `json:"signatureId"`
+	Timestamp        string                  `json:"timestamp"`
+	QuestionsAnswers []models.QuestionAnswer `json:"answers"`
 }
 
 func VerifySignature(db *sql.DB) http.HandlerFunc {
@@ -52,16 +55,22 @@ func VerifySignature(db *sql.DB) http.HandlerFunc {
 func verifySignature(db *sql.DB, userID, signatureID int) (*VerifySignatureResponse, error) {
 	var response VerifySignatureResponse
 	var timestamp time.Time
+	var questionsAnswers []byte
 
 	err := db.QueryRow(
-		"SELECT user_id, id, timestamp FROM signatures WHERE user_id = $1 AND id = $2",
+		"SELECT user_id, id, timestamp, questions_answers FROM signatures WHERE user_id = $1 AND id = $2",
 		userID,
 		signatureID,
-	).Scan(&response.UserID, &response.SignatureID, &timestamp)
+	).Scan(&response.UserID, &response.SignatureID, &timestamp, &questionsAnswers)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, fmt.Errorf("signature not found")
 		}
+		return nil, err
+	}
+
+	if err := json.Unmarshal(questionsAnswers, &response.QuestionsAnswers); err != nil {
+		log.Printf("Error unmarshalling questions_answers JSON: %v", err)
 		return nil, err
 	}
 
