@@ -26,6 +26,13 @@ curl -v -X POST "http://localhost:8000/api/v1/users/1/signatures" \
      -d '{"answers": [{"question": "Whats the best programming language?", "answer": "Go"}]}'
 ```
 
+Return codes:
+`200 OK` if signing is successfull
+`400 Bad Request` if body or userID is the wrong format
+`401 Unauthorized` if JWT isn't valid or userID doesn't match
+`500 Internal Server Error` for any server issues
+
+
 ### Verify Signature (GET /api/v1/users/{userID}/signatures/{signatureID})
 
 Doesn't require a JWT, just send a GET request to fetch the signed test for a specific user:
@@ -33,7 +40,7 @@ Doesn't require a JWT, just send a GET request to fetch the signed test for a sp
 curl -v "http://localhost:8000/api/v1/users/1/signatures/1"
 ```
 
-If the signed test exists for that specific user, response is `200 OK`:
+If the signed test exists for that specific user, response:
 ```json
 {
      "userId":1,
@@ -48,4 +55,8 @@ If the signed test exists for that specific user, response is `200 OK`:
 }
 ```
 
-If the signature doesn't exist, it's a `404 Not Found`.
+Return codes:
+`200 OK` if signed test exists for that user
+`400 Bad Request` if signatureID or userID are invalid
+`404 Not Found` if the signature doesn't exist
+`500 Internal Server Error` for any server issues
